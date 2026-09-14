@@ -10,6 +10,7 @@ in
   };
 
   imports = [
+    ./modules/system.nix
     ./modules/mount.nix
     ./modules/user-packages.nix
   ]
