@@ -14,6 +14,11 @@ PORTAL="$PORTAL_DIR/flake.nix"
 PROFILES_FILE="$REPO_DIR/profiles.nix"
 PROFILES_DIR="$HOME/nixos-profiles"
 
+NIX=(
+  nix
+  --extra-experimental-features "nix-command flakes"
+)
+
 echo "Welcome to the Bedrock + profiles installer!"
 echo
 echo "User: $USERNAME"
@@ -246,7 +251,7 @@ fi
 # --- Read profile catalog ---
 
 mapfile -t PROFILE_IDS < <(
-  nix eval \
+  "${NIX[@]}" eval \
     --impure \
     --raw \
     --expr '
@@ -271,14 +276,14 @@ for i in "${!PROFILE_IDS[@]}"; do
   id="${PROFILE_IDS[$i]}"
 
   name="$(
-    nix eval \
+    "${NIX[@]}" eval \
       --impure \
       --raw \
       --expr "(import $PROFILES_FILE).${id}.name"
   )"
 
   description="$(
-    nix eval \
+    "${NIX[@]}" eval \
       --impure \
       --raw \
       --expr "(import $PROFILES_FILE).${id}.description"
@@ -305,14 +310,14 @@ done
 selected_id="${PROFILE_IDS[$((selection - 1))]}"
 
 selected_name="$(
-  nix eval \
+  "${NIX[@]}" eval \
     --impure \
     --raw \
     --expr "(import $PROFILES_FILE).${selected_id}.name"
 )"
 
 selected_repo="$(
-  nix eval \
+  "${NIX[@]}" eval \
     --impure \
     --raw \
     --expr "(import $PROFILES_FILE).${selected_id}.repo"
