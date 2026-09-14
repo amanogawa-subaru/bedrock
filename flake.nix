@@ -3,11 +3,25 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
+
+    firefox-addons = {
+      url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, ... }: {
+  outputs = { self, nixpkgs, firefox-addons, ... }: {
     nixosModules.default = import ./default.nix;
-    homeModules.default = import ./home;
+    
+    homeModules.default = {
+      _module.args = {
+        inherit firefox-addons;
+      };
+
+      imports = [
+        ./home
+      ];
+    };
   };
 }
 
