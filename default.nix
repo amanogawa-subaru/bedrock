@@ -11,6 +11,7 @@ in
 
   imports = [
     ./modules/system.nix
+    ./modules/fonts.nix
     ./modules/mount.nix
     ./modules/user-packages.nix
   ]
