@@ -13,6 +13,7 @@ in
     ./modules/system.nix
     ./modules/fonts.nix
     ./modules/mount.nix
+    ./modules/default-packages.nix
     ./modules/user-packages.nix
   ]
   ++ lib.optional settings.nvidia ./modules/nvidia.nix
