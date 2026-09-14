@@ -463,7 +463,8 @@ for profile_id in "${INSTALLED_PROFILE_IDS[@]}"; do
   cat >> "$PORTAL_TMP" <<EOF
     $profile_id = {
       url = "path:$profile_path";
-      inputs.nixpkgs.follows = "bedrock/nixpkgs";
+      inputs.home-manager.inputs.nixpkgs.follows = "bedrock/nixpkgs";
+      inputs.catppuccin.inputs.nixpkgs.follows = "bedrock/nixpkgs";
     };
 
 EOF
