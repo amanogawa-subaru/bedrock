@@ -25,5 +25,8 @@
     # CLI
     fastfetch
     btop
+    
+    # Tools
+    git
   ];
 }
