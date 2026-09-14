@@ -1,6 +1,20 @@
 { pkgs, firefox-addons, ... }:
 
+let
+  comic-thumbnailer = pkgs.writeShellApplication {
+    name = "comic-thumbnailer";
+
+    runtimeInputs = with pkgs; [
+      _7zz
+      imagemagick
+    ];
+
+    text = builtins.readFile ./scripts/comic-thumbnailer;
+  };
+in
+
 {
+  # Firefox enabled as fallback browser
   programs.firefox = {
     enable = true;
 
@@ -25,6 +39,7 @@
     };
   };
 
+  # Librewolf as default browser
   programs.librewolf = {
     enable = true;
 
@@ -101,5 +116,18 @@
       name = "Nemo";
       exec = "${pkgs.nemo-with-extensions}/bin/nemo";
     };  
+    
+    # Comic thumbnailer
+    dataFile."thumbnailers/comic.thumbnailer".text = ''
+      [Thumbnailer Entry]
+      Exec=${comic-thumbnailer}/bin/comic-thumbnailer %i %s %o
+      MimeType=application/vnd.comicbook+zip;
+    '';
+
+  };
+  
+  # Set default terminal for Nemo
+  dconf.settings."org/cinnamon/desktop/applications/terminal" = {
+    exec = "kitty";
   };
 }
