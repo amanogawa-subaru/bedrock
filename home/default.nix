@@ -63,6 +63,13 @@ in
     };
   };
 
+  # Enable neovim
+  programs.neovim = {
+    enable = true;
+
+    initLua = builtins.readFile ./nvim/init.lua;
+  };
+
   # XDG configuration
   xdg = {
     enable = true;

@@ -19,7 +19,6 @@
 
     # Editing
     geany
-    neovim
     onlyoffice-desktopeditors
 
     # CLI
