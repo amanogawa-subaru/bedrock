@@ -18,7 +18,6 @@
     mcomix
 
     # Editing
-    geany
     onlyoffice-desktopeditors
 
     # CLI
