@@ -34,6 +34,7 @@ in
         "text/plain" = [ "nvim.desktop" ];
 	"text/x-lua" = [ "nvim.desktop" ];
         "text/x-qml" = [ "nvim.desktop" ];
+	"text/csv" = [ "nvim.desktop" ];
 
         "image/jpeg" = [ "imv.desktop" ];
         "image/png" = [ "imv.desktop" ];
