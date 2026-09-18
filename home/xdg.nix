@@ -82,6 +82,7 @@ in
           "text/plain"
 	  "text/x-lua"
 	  "text/x-qml"
+	  "text/csv"
 	];
       };
     };  
