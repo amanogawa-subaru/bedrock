@@ -13,6 +13,7 @@ PORTAL="$PORTAL_DIR/flake.nix"
 
 PROFILES_FILE="$REPO_DIR/profiles.nix"
 PROFILES_DIR="$HOME/nixos-profiles"
+PROFILE_METADATA_NAME="bedrock-profile.nix"
 
 NIX=(
   nix
@@ -248,6 +249,40 @@ else
   echo "Existing mount.nix preserved."
 fi
 
+# --- Profile metadata ---
+
+read_nixpkgs_followers() {
+  local metadata_file="$1"
+  local result
+
+  if ! result="$(
+    "${NIX[@]}" eval \
+      --impure \
+      --raw \
+      --expr '
+        let
+          metadata = import '"$metadata_file"';
+          followers =
+            if builtins.isAttrs metadata && metadata ? nixpkgsFollowers then
+              metadata.nixpkgsFollowers
+            else
+              throw "Profile metadata must define nixpkgsFollowers";
+        in
+          if builtins.isList followers && builtins.all builtins.isString followers then
+            builtins.concatStringsSep "\n" followers
+          else
+            throw "nixpkgsFollowers must be a list of strings"
+      '
+  )"; then
+    echo
+    echo "Error: Invalid profile metadata:"
+    echo "  $metadata_file"
+    return 1
+  fi
+
+  printf '%s' "$result"
+}
+
 # --- Read profile catalog ---
 
 mapfile -t PROFILE_IDS < <(
@@ -334,10 +369,12 @@ echo "Install path: $target_dir"
 
 if [[ -e "$target_dir" ]]; then
   if [[ ! -d "$target_dir" ]] ||
-     [[ ! -f "$target_dir/flake.nix" ]]; then
+     [[ ! -f "$target_dir/flake.nix" ]] ||
+     [[ ! -f "$target_dir/$PROFILE_METADATA_NAME" ]]; then
 
     echo
     echo "Error: $target_dir exists but is not a valid profile checkout."
+    echo "Expected flake.nix and $PROFILE_METADATA_NAME."
     exit 1
   fi
 
@@ -373,6 +410,17 @@ if [[ -d "$PROFILES_DIR" ]]; then
       echo "  $profile_dir"
       exit 1
     fi
+
+    if [[ ! -f "$profile_dir/$PROFILE_METADATA_NAME" ]]; then
+      echo
+      echo "Error: Installed profile directory has no $PROFILE_METADATA_NAME:"
+      echo "  $profile_dir"
+      exit 1
+    fi
+
+    # Validate profile metadata while discovering profiles.
+    read_nixpkgs_followers \
+      "$profile_dir/$PROFILE_METADATA_NAME" >/dev/null
 
     INSTALLED_PROFILE_IDS+=("$profile_id")
   done
@@ -459,12 +507,27 @@ EOF
 
 for profile_id in "${INSTALLED_PROFILE_IDS[@]}"; do
   profile_path="$PROFILES_DIR/$profile_id"
+  profile_metadata="$profile_path/$PROFILE_METADATA_NAME"
+
+  followers_raw="$(read_nixpkgs_followers "$profile_metadata")"
+  nixpkgs_followers=()
+
+  if [[ -n "$followers_raw" ]]; then
+    mapfile -t nixpkgs_followers <<< "$followers_raw"
+  fi
 
   cat >> "$PORTAL_TMP" <<EOF
     $profile_id = {
       url = "path:$profile_path";
-      inputs.home-manager.inputs.nixpkgs.follows = "bedrock/nixpkgs";
-      inputs.catppuccin.inputs.nixpkgs.follows = "bedrock/nixpkgs";
+EOF
+
+  for follower in "${nixpkgs_followers[@]}"; do
+    cat >> "$PORTAL_TMP" <<EOF
+      inputs."$follower".inputs.nixpkgs.follows = "bedrock/nixpkgs";
+EOF
+  done
+
+  cat >> "$PORTAL_TMP" <<'EOF'
     };
 
 EOF
