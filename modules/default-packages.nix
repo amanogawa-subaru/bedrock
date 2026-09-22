@@ -17,9 +17,6 @@
     mpv
     mcomix
 
-    # Editing
-    onlyoffice-desktopeditors
-
     # CLI
     fastfetch
     btop
