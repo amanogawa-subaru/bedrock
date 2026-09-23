@@ -24,6 +24,10 @@ in
       createDirectories = true;
     };
 
+    configFile = {
+      "foot/foot.ini".source = ./dots/foot/foot.ini;
+    };
+
     mimeApps = {
       enable = true;
 
@@ -73,7 +77,7 @@ in
       nvim = {
         name = "Neovim";
 	genericName = "Text Editor";
-	exec = "kitty nvim %F";
+	exec = "foot nvim %F";
 	icon = "nvim";
 	terminal = false;
 	type = "Application";
@@ -98,6 +102,6 @@ in
   
   # Set default terminal for Nemo
   dconf.settings."org/cinnamon/desktop/applications/terminal" = {
-    exec = "kitty";
+    exec = "foot";
   };
 }

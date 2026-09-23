@@ -18,6 +18,7 @@
     mcomix
 
     # CLI
+    foot
     fastfetch
     btop
     
