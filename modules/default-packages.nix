@@ -23,5 +23,7 @@
     
     # Tools
     git
+    grim
+    slurp
   ];
 }
