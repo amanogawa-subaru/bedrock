@@ -25,5 +25,6 @@
     git
     grim
     slurp
+    wl-clipboard
   ];
 }
